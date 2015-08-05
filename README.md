@@ -1,5 +1,5 @@
 # binder
-## Brings students closer
+### Brings students closer
 
 - What is binder?
 
