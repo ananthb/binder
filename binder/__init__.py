@@ -1,11 +1,11 @@
 """
-binder
-~~~~~~
+    binder
+    ~~~~~~
 
-Brings students closer.
+    Brings students closer.
 
-:copyright: (c) 2015 by Ananth Bhaskararaman
-:license: MIT, see LICENSE for more details
+    :copyright: (c) 2015 by Ananth Bhaskararaman
+    :license: MIT, see LICENSE for more details
 
 """
 
