@@ -14,5 +14,4 @@ class DefaultConfig(object):
     """ Default configuration
     """
 
-    APP_NAME = 'binder'
     DEBUG = True

@@ -12,13 +12,18 @@
 
 import sys
 from flask import Flask
+from flask_bootstrap import Bootstrap
 
 from .config import DefaultConfig
+from .homepage import home
 
 __all__ = ['create_app']
 
+# List of blueprints for binder
+BLUEPRINTS = [home]
 
-def create_app(config=None, app_name=None, blueprints=None):
+
+def create_app(config=None):
     """ create_app::Flask.Config->String->[Blueprint]->Flask
 
         Creates a Flask app and registers blueprints if any.
@@ -26,16 +31,16 @@ def create_app(config=None, app_name=None, blueprints=None):
         config is the path to a configuration file.
     """
 
-    if app_name is None:
-        name = DefaultConfig.APP_NAME
-    app = Flask(name)
+    app = Flask('binder')
+
+    # Add bootstrap functionality
+    Bootstrap(app)
 
     # Apply configuration options
     config_app(config, app)
 
     # Register app blueprints
-    if blueprints:
-        for blueprint in blueprints:
+    for blueprint in BLUEPRINTS:
             app.register_blueprint(blueprint)
     return app
 

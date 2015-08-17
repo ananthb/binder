@@ -16,7 +16,7 @@ from flask.ext.script import Manager
 from .app import create_app
 
 
-def cmdline():
+def binder_app():
     manager = Manager(create_app)
     manager.add_option(
         '-c',

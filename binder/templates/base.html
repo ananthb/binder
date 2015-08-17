@@ -1,0 +1,11 @@
+{% extends 'bootstrap/base.html' %}
+
+{# Default title #}
+{% block title %}binder - brings students closer! {% endblock %}
+
+{# fixes for ie8 #}
+{% import "bootstrap/fixes.html" as fixes %}
+{% block head %}
+  {{super()}}
+  {{fixes.ie8()}}
+{% endblock %}

@@ -24,11 +24,12 @@ setup(
     platforms='any',
     install_requires=[
         'flask>=0.10',
-        'flask-script>=2.0.5'
+        'flask-script>=2.0.5',
+        'flask-bootstrap~=3.3.5',
     ],
     entry_points={
         'console_scripts': [
-            'binder = binder:cmdline'
+            'binder = binder:binder_app'
         ],
     },
     zip_safe=True,
