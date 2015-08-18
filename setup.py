@@ -1,14 +1,20 @@
 """
-binder
-~~~~~~
+    binder
+    ~~~~~~
 
-binder is a learning social network. It helps you find and learn with
-other students. Give it a whirl. Sign up today!
+    binder is a learning social network. It helps you find and learn with
+    other students. Give it a whirl. Sign up today!
 
-binder is also open source software and available under the MIT license.
+    binder is also open source software and available under the MIT license.
 
+    :copyright: (c) 2015 by Ananth Bhaskararaman
+    :license: MIT, see LICENSE for more details
 
 """
+import sys
+
+if sys.version < '3.4.0':
+    raise RuntimeError("You need at least python 3.4 for binder to work.")
 
 from setuptools import setup
 
