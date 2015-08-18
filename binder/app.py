@@ -14,13 +14,10 @@ import sys
 from flask import Flask
 from flask_bootstrap import Bootstrap
 
+import binder
 from .config import DefaultConfig
-from .homepage import home
 
 __all__ = ['create_app']
-
-# List of blueprints for binder
-BLUEPRINTS = [home]
 
 
 def create_app(config=None):
@@ -40,7 +37,7 @@ def create_app(config=None):
     config_app(config, app)
 
     # Register app blueprints
-    for blueprint in BLUEPRINTS:
+    for blueprint in binder.BLUEPRINTS:
             app.register_blueprint(blueprint)
     return app
 

@@ -15,6 +15,13 @@ from flask.ext.script import Manager
 
 from .app import create_app
 
+# import blueprints
+from .homepage import home
+
+BLUEPRINTS = [
+    home,
+]
+
 
 def binder_app():
     manager = Manager(create_app)
