@@ -12,6 +12,7 @@
 
 import sys
 from flask import Flask
+from flask import render_template
 from flask_bootstrap import Bootstrap
 
 import binder
@@ -35,6 +36,11 @@ def create_app(config=None):
 
     # Apply configuration options
     config_app(config, app)
+
+    # app error handlers
+    @app.errorhandler(404)
+    def error_handler(e):
+        return render_template('error_404.html'), 404
 
     # Register app blueprints
     for blueprint in binder.BLUEPRINTS:

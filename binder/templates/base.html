@@ -30,7 +30,7 @@
         </div>
       </div>
       <div class="inner cover" id="page-copy">
-        <h1 class="cover-heading">Brings students closer.</h1>
+          <h1 class="cover-heading">{% block page_heading %}Brings students closer.{% endblock %}</h1>
         {% block page_copy %}
           {# child templates have to override this to insert page copy #}
         {% endblock %}
