@@ -8,5 +8,42 @@
 {% block head %}
   {{super()}}
   {{fixes.ie8()}}
-  <link href="/static/binder_main.css" rel="stylesheet">
+  <link href="{{ url_for('pages.static', filename='base.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="site-wrapper">
+  <div class="site-wrapper-inner">
+    <div class="cover-container">
+      <div class="masthead clearfix">
+        <div class="inner">
+          <h3 class="masthead-brand">binder</h3>
+          {% block nav %} {# default site nav #}
+          <nav>
+            <ul class="nav masthead-nav">
+              <li class="active"><a href="/">Home</a></li>
+              <li><a href="#">Login</a></li>
+              <li><a href="#">Contact</a></li>
+            </ul>
+          </nav>
+          {% endblock %}
+        </div>
+      </div>
+      <div class="inner cover" id="page-copy">
+        <h1 class="cover-heading">Brings students closer.</h1>
+        {% block page_copy %}
+          {# child templates have to override this to insert page copy #}
+        {% endblock %}
+      </div>
+
+      <div class="mastfoot">
+        <div class="inner">
+            {% block footer %}
+            <p>binder (c) 2015. Get the source code <a href="http://git.dandy.design/ananth/binder">here</a>.</p>
+            {% endblock %}
+        </div>
+      </div>
+    </div> {# end cover-container #}
+  </div> {# end site-wrapper-inner #}
+</div> {# end site-wrapper #}
 {% endblock %}

@@ -1,5 +1,5 @@
 """
-    binder.homepage
+    binder.pages.homepage
     ~~~~~~~~~~~~~~~
 
     Blueprint to render the index template and display a homepage.
@@ -12,13 +12,14 @@
 from flask import Blueprint
 from flask import render_template
 
-home = Blueprint(
-    'home',
+
+Pages = Blueprint(
+    'pages',
     __name__,
-    template_folder='templates'
+    static_folder='static',
+    template_folder='templates',
 )
 
-
-@home.route('/')
-def show():
-    return render_template('index.html')
+@Pages.route('/')
+def index():
+    return render_template('pages/index.html')

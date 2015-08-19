@@ -16,10 +16,11 @@ from flask.ext.script import Manager
 from .app import create_app
 
 # import blueprints
-from .homepage import home
+from . import pages
 
+# Global list of blueprints
 BLUEPRINTS = [
-    home,
+    pages.Pages,
 ]
 
 

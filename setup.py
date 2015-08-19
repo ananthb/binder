@@ -32,6 +32,7 @@ setup(
         'flask>=0.10',
         'flask-script>=2.0.5',
         'flask-bootstrap~=3.3.5',
+        'flask-sqlalchemy==2',
     ],
     entry_points={
         'console_scripts': [
