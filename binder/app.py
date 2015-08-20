@@ -11,10 +11,11 @@
 """
 
 import sys
-from flask import Flask
+from flask import g, Flask
 from flask import render_template
 from flask_menu import Menu
 from flask_bootstrap import Bootstrap
+from flask.ext.sqlalchemy import SQLAlchemy
 
 import binder
 from .config import DefaultConfig
@@ -40,6 +41,11 @@ def create_app(config=None):
 
     # Apply configuration options
     config_app(config, app)
+
+    # init SQLAlchemy
+    db = SQLAlchemy(app)
+    with app.app_context():
+        setattr(g, 'db', db)
 
     # app error handlers
     @app.errorhandler(404)
@@ -67,3 +73,8 @@ def config_app(config, app):
             print("[binder] Error: Config file not readable or not found.",
                   file=sys.stderr)
             sys.exit(1)
+    # Check SQLAlchemy database URI
+    if not app.config.get('SQLALCHEMY_DATABASE_URI', None):
+        print("[binder] Error: Database uri not specified. " +
+              "Set SQLALCHEMY_DATABASE_URI config option and try again.")
+        sys.exit(1)
