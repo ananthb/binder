@@ -24,15 +24,16 @@ setup(
     description='Brings students closer.',
     license='MIT',
     long_description=__doc__,
-    packages=['binder'],
+    packages=['binder', 'binder.pages'],
     author='Ananth Bhaskararaman',
     author_email='antsub@gmail.com',
     platforms='any',
     install_requires=[
-        'flask>=0.10',
-        'flask-script>=2.0.5',
-        'flask-bootstrap~=3.3.5',
+        'flask==0.10',
+        'flask-script==2.0.5',
+        'flask-bootstrap>=3.3.5',
         'flask-sqlalchemy==2',
+        'flask-menu==0.4.0',
     ],
     entry_points={
         'console_scripts': [

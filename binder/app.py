@@ -13,6 +13,7 @@
 import sys
 from flask import Flask
 from flask import render_template
+from flask_menu import Menu
 from flask_bootstrap import Bootstrap
 
 import binder
@@ -34,6 +35,9 @@ def create_app(config=None):
     # Add bootstrap functionality
     Bootstrap(app)
 
+    # init flask_menu
+    Menu(app)
+
     # Apply configuration options
     config_app(config, app)
 
@@ -44,7 +48,7 @@ def create_app(config=None):
 
     # Register app blueprints
     for blueprint in binder.BLUEPRINTS:
-            app.register_blueprint(blueprint)
+        app.register_blueprint(blueprint)
     return app
 
 

@@ -8,7 +8,7 @@
 {% block head %}
   {{super()}}
   {{fixes.ie8()}}
-  <link href="{{ url_for('pages.static', filename='base.css') }}" rel="stylesheet">
+  <link href="{{ url_for('static', filename='base.css') }}" rel="stylesheet">
 {% endblock %}
 
 {% block content %}
@@ -21,16 +21,23 @@
           {% block nav %} {# default site nav #}
           <nav>
             <ul class="nav masthead-nav">
-              <li class="active"><a href="/">Home</a></li>
-              <li><a href="#">Login</a></li>
-              <li><a href="#">Contact</a></li>
+              {% for item in current_menu.children recursive %}
+              <li {% if item.active %}class="active"{% endif %}>
+                <a href="{{ item.url }}">{{ item.text }}</a>
+              </li>
+              {% if item.children %}
+              <ul>
+                {{ loop(item.children) }}
+              </ul>
+              {% endif %}
+              {% endfor %}
             </ul>
           </nav>
           {% endblock %}
         </div>
       </div>
       <div class="inner cover" id="page-copy">
-          <h1 class="cover-heading">{% block page_heading %}Brings students closer.{% endblock %}</h1>
+          <h1 class="cover-heading">{% block page_heading %}{# page heading just above page content #}{% endblock %}</h1>
         {% block page_copy %}
           {# child templates have to override this to insert page copy #}
         {% endblock %}
