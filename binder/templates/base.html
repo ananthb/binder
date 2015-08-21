@@ -8,7 +8,7 @@
 {% block head %}
   {{super()}}
   {{fixes.ie8()}}
-  <link href="{{ url_for('static', filename='base.css') }}" rel="stylesheet">
+  <link href="{{ url_for('static', filename='css/base.css') }}" rel="stylesheet">
 {% endblock %}
 
 {% block content %}
@@ -34,8 +34,16 @@
             </ul>
           </nav>
           {% endblock %}
-        </div>
-      </div>
+        </div> {# end inner #}
+        <div class="messages-wrap">
+          {% for category, msg in get_flashed_messages(with_categories=true) %}
+          <div class="messages alert alert-{{ category }} fade in">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+            <span>{{ msg }}</span>
+          </div> {# end messages #}
+          {% endfor %}
+        </div>  {# end messages-wrap #}
+      </div> {# end masthead #}
       <div class="inner cover" id="page-copy">
           <h1 class="cover-heading">{% block page_heading %}{# page heading just above page content #}{% endblock %}</h1>
         {% block page_copy %}

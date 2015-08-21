@@ -161,3 +161,12 @@ body {
     width: 700px;
   }
 }
+
+.messages-wrap {
+  margin-top: 30px;
+  margin-bottom: 20px;
+}
+
+.messages {
+  padding: 10px;
+}
