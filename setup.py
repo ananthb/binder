@@ -20,7 +20,7 @@ from setuptools import setup
 
 setup(
     name='binder',
-    version='0.0.1',
+    version='0.0.4',
     description='Brings students closer.',
     license='MIT',
     long_description=__doc__,

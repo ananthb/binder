@@ -1,12 +1,11 @@
 """
-    binder.pages.homepage
+    binder.pages.views
     ~~~~~~~~~~~~~~~
 
-    Blueprint to render the index template and display a homepage.
+    Static pages are rendered here
 
     :copyright: (c) 2015 by Ananth Bhaskararaman
     :license: MIT, See LICENSE for more details
-
 """
 
 from flask import Blueprint, render_template

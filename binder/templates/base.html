@@ -1,3 +1,24 @@
+{#
+    templates.base
+    ~~~~~~~~~~~~~~
+
+    Base template from which all templates inherit.
+
+    The template provides these blocks to customize in children:
+    1) title
+    2) nav
+    3) page_heading
+    4) page_copy
+    5) footer
+
+    CSS can be added to the head section by modifying the head block,
+    but remember to call super() in the head block to load
+    pre-defined css files.
+
+    :copyright: (c) 2015 by Ananth Bhaskararaman
+    :license: MIT, see LICENSE for more details
+
+#}
 {% extends 'bootstrap/base.html' %}
 
 {# Default title #}

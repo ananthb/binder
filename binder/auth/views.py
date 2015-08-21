@@ -1,3 +1,11 @@
+"""
+    binder.auth.views
+    ~~~~~~~~~~~~~~~~~
+
+    :copyright: (c) 2015 by Ananth Bhaskararaman
+    :license: MIT, see LICENSE for more details
+"""
+
 from flask import (g, redirect, request, render_template,
                    session, flash, url_for, Blueprint)
 from flask.ext.openid import OpenID
