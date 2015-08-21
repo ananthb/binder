@@ -10,8 +10,20 @@
 """
 
 
-class DefaultConfig(object):
-    """ Default configuration
-    """
+class Config(object):
+    """ Default configuration """
+    DEBUG = False
+    TESTING = False
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
 
+
+class DevelopmentConfig(Config):
     DEBUG = True
+
+
+class TestingConfig(Config):
+    TESTING = True
+
+
+class ProductionConfig(Config):
+    SQLALCHEMY_DATABASE_URI = ''

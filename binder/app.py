@@ -11,27 +11,62 @@
 """
 
 import sys
+import enum
+
 from flask import g, Flask
 from flask import render_template
 from flask_menu import Menu
+from flask.ext.script import Manager
 from flask_bootstrap import Bootstrap
-from flask.ext.sqlalchemy import SQLAlchemy
 
 import binder
-from .config import DefaultConfig
+from .auth import oid
+from .database import db
+from .models import User
+from .config import DevelopmentConfig, TestingConfig, ProductionConfig
 
-__all__ = ['create_app']
+__all__ = ['create_app', 'binder_app']
+
+Mode = enum.Enum('Mode', 'Development Testing Production')
 
 
-def create_app(config=None):
-    """ create_app::Flask.Config->String->[Blueprint]->Flask
+# This is the function that runs when the binder command is executed in a shell
+def binder_app():
+    manager = Manager(create_app)
+    manager.add_option(
+        '-c',
+        '--config',
+        dest='config',
+        required=False,
+        help='Path to configuration file'
+    )
+    manager.add_option(
+        '-m',
+        '--mode',
+        dest='mode',
+        required=False,
+        help='App running mode. One of Development, Testing, and Production'
+    )
+    # We are off to the races
+    manager.run()
+
+
+def create_app(config, mode):
+    """ create_app::Flask.Config->binder.Mode->Flask
 
         Creates a Flask app and registers blueprints if any.
 
         config is the path to a configuration file.
+        If the path to the config file is a relative path, then
+        the instance folder of the app is searched. If the config file
+        is located outside the app's instance folder, an absolute path
+        can be used for it.
     """
 
-    app = Flask('binder')
+    if mode is None:
+        mode = "Development"
+
+    app = Flask('binder', instance_relative_config=True)
 
     # Add bootstrap functionality
     Bootstrap(app)
@@ -40,12 +75,20 @@ def create_app(config=None):
     Menu(app)
 
     # Apply configuration options
-    config_app(config, app)
+    config_app(mode, config, app)
 
-    # init SQLAlchemy
-    db = SQLAlchemy(app)
+    # activate OpenID
+    oid.init_app(app)
+
+    # SQLAlchemy init
+    db.init_app(app)
+    # development mode
+    if mode == "Development":
+        with app.test_request_context():
+            db.create_all()
+    # attach the db connection to the application context
     with app.app_context():
-        setattr(g, 'db', db)
+        g.db = db
 
     # app error handlers
     @app.errorhandler(404)
@@ -58,14 +101,25 @@ def create_app(config=None):
     return app
 
 
-def config_app(config, app):
-    """ config_app::flask.Flask->None
+def config_app(app_mode, config, app):
+    """ config_app::binder.Mode->flask.Flask.config->flask.Flask->None
 
-        Configures the app with the defailt configuration.
+        Configures the app to run in the given mode.
         If a configuration file is supplied, that is also applied.
     """
 
-    app.config.from_object(DefaultConfig)
+    config_map = {
+        Mode.Development: DevelopmentConfig,
+        Mode.Testing: TestingConfig,
+        Mode.Production: ProductionConfig
+    }
+    try:
+        app.config.from_object(config_map[Mode[app_mode]])
+    except KeyError:
+        print("[binder] Error: Invalid mode. Run binder --help for more.",
+              file=sys.stderr)
+        sys.exit(1)
+
     if config:
         try:
             app.config.from_pyfile(config)
@@ -73,8 +127,3 @@ def config_app(config, app):
             print("[binder] Error: Config file not readable or not found.",
                   file=sys.stderr)
             sys.exit(1)
-    # Check SQLAlchemy database URI
-    if not app.config.get('SQLALCHEMY_DATABASE_URI', None):
-        print("[binder] Error: Database uri not specified. " +
-              "Set SQLALCHEMY_DATABASE_URI config option and try again.")
-        sys.exit(1)

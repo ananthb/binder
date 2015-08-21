@@ -11,27 +11,14 @@
 
 __version__ = '0.0.1'
 
-from flask.ext.script import Manager
-
-from .app import create_app
+from .app import binder_app, create_app
 
 # import blueprints
 from . import pages
+from . import auth
 
 # Global list of blueprints
 BLUEPRINTS = [
     pages.Pages,
+    auth.Auth,
 ]
-
-
-def binder_app():
-    manager = Manager(create_app)
-    manager.add_option(
-        '-c',
-        '--config',
-        dest='config',
-        required=False,
-        help='Path to configuration file'
-    )
-    # We are off to the races
-    manager.run()
