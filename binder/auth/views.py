@@ -8,8 +8,6 @@
 
 from flask import (g, redirect, request, render_template,
                    session, flash, url_for, Blueprint)
-from flask.ext.openid import OpenID
-from openid.extensions import pape
 
 from binder.models import User
 

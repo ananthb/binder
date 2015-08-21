@@ -8,6 +8,6 @@
     :license: MIT, see license for more details
 """
 
-from .views import oid, Auth
+from .views import Auth
 
-__all__ = ['oid', 'Auth']
+__all__ = ['Auth']

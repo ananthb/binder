@@ -19,7 +19,6 @@ from flask.ext.script import Manager
 from flask_bootstrap import Bootstrap
 
 import binder
-from .auth import oid
 from .database import db
 from .models import User
 from .config import DevelopmentConfig, TestingConfig, ProductionConfig
@@ -75,9 +74,6 @@ def create_app(config, mode):
 
     # Apply configuration options
     config_app(mode, config, app)
-
-    # activate OpenID
-    oid.init_app(app)
 
     # SQLAlchemy init
     db.init_app(app)
