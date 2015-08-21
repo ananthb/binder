@@ -34,7 +34,6 @@ setup(
         'flask-bootstrap>=3.3.5',
         'flask-sqlalchemy==2',
         'flask-menu==0.4.0',
-        'flask-openid==1.2.4',
     ],
     entry_points={
         'console_scripts': [
