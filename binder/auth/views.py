@@ -8,6 +8,7 @@
 
 from flask import (g, redirect, request, render_template,
                    session, flash, url_for, Blueprint)
+from flask_oauthlib.client import OAuth
 
 from binder.models import User
 
