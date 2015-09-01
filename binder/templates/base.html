@@ -60,6 +60,9 @@
         </div> {# end inner #}
         <div class="messages-wrap">
           {% for category, msg in get_flashed_messages(with_categories=true) %}
+          {% if category is equalto('message') %}
+          {% set category = "info" %}
+          {%  endif %}
           <div class="messages alert alert-{{ category }} fade in">
             <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
             <span>{{ msg }}</span>

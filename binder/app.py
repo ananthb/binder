@@ -75,15 +75,7 @@ def create_app(config, mode):
     # Apply configuration options
     config_app(mode, config, app)
 
-    # SQLAlchemy init
-    db.init_app(app)
-    # development mode
-    if mode == "Development":
-        with app.test_request_context():
-            db.create_all()
-    # attach the db connection to the application context
-    with app.app_context():
-        g.db = db
+    config_db(db, app)
 
     # app error handlers
     @app.errorhandler(404)
@@ -122,3 +114,20 @@ def config_app(app_mode, config, app):
             print("[binder] Error: Config file not readable or not found.",
                   file=sys.stderr)
             sys.exit(1)
+
+
+def config_db(db, app):
+    """ config_db::SQLAlchemy->flask.Flask->None
+
+        Initializes the database. Also creates the tables.
+        *This should check if tables exist before creating them.*
+        Then attaches the database object to the flask.g object
+    """
+
+    db.init_app(app)
+    # create database tables in an app request context
+    with app.test_request_context():
+        db.create_all()
+    # attach db to app context
+    with app.app_context():
+        g.db = db
