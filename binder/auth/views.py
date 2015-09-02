@@ -7,15 +7,14 @@
 """
 
 import sys
-from flask import (g, redirect, request, render_template,
+from flask import (redirect, request, current_app,
                    session, flash, url_for, Blueprint)
-from flask_oauthlib.client import OAuth
+from requests_oauthlib import OAuth2Session
+from requests_oauthlib.compliance_fixes import facebook_compliance_fix
 
 from binder.models import User
 
 Auth = Blueprint('auth', __name__, url_prefix='/auth')
-oauth = OAuth()
-facebook = None
 
 
 @Auth.record_once
@@ -34,37 +33,32 @@ def record_auth(setup_state):
         print("[binder] error: Facebook app ID or secret not found.",
               file=sys.stderr)
         sys.exit(1)
-    global facebook
-    facebook = oauth.remote_app(
-        'facebook',
-        base_url='https://graph.facebook.com/',
-        request_token_url=None,
-        access_token_url='/oauth/access_token',
-        authorize_url='https://www.facebook.com/dialog/oauth',
-        consumer_key=app.config.get('FACEBOOK_APP_ID'),
-        consumer_secret=app.config.get('FACEBOOK_APP_SECRET'),
-        request_token_params={'scope': 'email'}
-    )
 
 
 @Auth.route('/login')
 def login():
-    return facebook.authorize(
-        callback=url_for(
-            '.fb_authorized',
-            next=request.args.get('next') or request.referrer or None,
-            _external=True
-        ))
+    fb_id = current_app.config.get('FACEBOOK_APP_ID')
+    facebook = OAuth2Session(
+        client_id=fb_id,
+        redirect_uri=url_for('auth.fb_authorized', _external=True)
+    )
+    facebook = facebook_compliance_fix(facebook)
+    authorization_url, state = facebook.authorization_url(
+        'https://www.facebook.com/dialog/oauth'
+    )
+    session['oauth_state'] = state
+    return redirect(authorization_url)
 
 
 @Auth.route('/fb_authorized')
 def fb_authorized():
     next_url = request.args.get('next') or url_for('pages.index')
-    resp = facebook.authorized_response()
-    if resp is None:
-        flash("You denied the sign in request.")
-        return redirect(next_url)
-    # Must add way of storing logged in user's creds
+    client_secret = current_app.config.get('FACEBOOK_APP_SECRET')
+    #facebook.fetch_token(
+    #    'https://graph.facebook.com/oauth/access_token',
+    #    client_secret=client_secret,
+    #    authorization_response=request.url,
+    #)
     # and actually signing them in.
     flash("Signed in", 'success')
     return redirect(next_url)

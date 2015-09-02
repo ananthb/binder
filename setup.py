@@ -34,7 +34,7 @@ setup(
         'flask-bootstrap>=3.3.5',
         'flask-sqlalchemy==2',
         'flask-menu==0.4.0',
-        'flask-oauthlib==0.9.1',
+        'requests-oauthlib==0.5.0',
     ],
     entry_points={
         'console_scripts': [
