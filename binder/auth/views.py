@@ -7,7 +7,7 @@
 """
 
 import sys
-from flask import (redirect, request, current_app,
+from flask import (g, redirect, request, current_app,
                    session, flash, url_for, Blueprint)
 from requests_oauthlib import OAuth2Session
 from requests_oauthlib.compliance_fixes import facebook_compliance_fix
@@ -21,9 +21,8 @@ Auth = Blueprint('auth', __name__, url_prefix='/auth')
 def record_auth(setup_state):
     """ record_auth::flask.Flask.state->None
 
-        This function sets up the oauth object.
-        Config options can only be retrieved from an
-        app object. Hence, this func.
+        Checks for facebook oauth credentials when registering
+        the blueprint.
     """
 
     app = setup_state.app
@@ -33,15 +32,21 @@ def record_auth(setup_state):
         print("[binder] error: Facebook app ID or secret not found.",
               file=sys.stderr)
         sys.exit(1)
-    facebook = OAuth2Session(client_id=fb_id)
+
+
+@Auth.before_request
+def setup_faecbook_oauth():
+    fb_id = current_app.config.get('FACEBOOK_APP_ID')
+    facebook = OAuth2Session(
+        client_id=fb_id,
+        redirect_uri=url_for('auth.fb_authorized', _external=True))
     facebook = facebook_compliance_fix(facebook)
-    Auth.facebook_oauth = facebook
+    g.fb_oauth = facebook
 
 
 @Auth.route('/login')
 def login():
-    facebook = Auth.facebook_oauth
-    facebook.redirect_uri = url_for('auth.fb_authorized', _external=True)
+    facebook = g.fb_oauth
     authorization_url, state = facebook.authorization_url(
         'https://www.facebook.com/dialog/oauth'
     )
@@ -49,9 +54,9 @@ def login():
     return redirect(authorization_url)
 
 
-@Auth.route('/fb_authorized')
+@Auth.route('/fb_authorized/')
 def fb_authorized():
-    facebook = Auth.facebook_oauth
+    facebook = g.fb_oauth
     next_url = request.args.get('next') or url_for('pages.index')
     client_secret = current_app.config.get('FACEBOOK_APP_SECRET')
     facebook.fetch_token(
@@ -59,6 +64,11 @@ def fb_authorized():
         client_secret=client_secret,
         authorization_response=request.url,
     )
-    # and actually signing them in.
+    # must store user credentials here
     flash("Signed in", 'success')
     return redirect(next_url)
+
+
+@Auth.teardown_request
+def cleanup_facebook_oauth():
+    del g.fb_oauth
