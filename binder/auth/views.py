@@ -7,8 +7,12 @@
 """
 
 import sys
+import uuid
+import logging
+
 from flask import (g, redirect, request, current_app,
                    session, flash, url_for, Blueprint)
+from flask.ext.login import login_user
 from requests_oauthlib import OAuth2Session
 from requests_oauthlib.compliance_fixes import facebook_compliance_fix
 
@@ -35,11 +39,20 @@ def record_auth(setup_state):
 
 
 @Auth.before_request
+def detect_logged_in_user():
+    token = session.get('fb_oauth_token', None)
+    if token is not None:
+        flash("Already logged in!")
+        return redirect(url_for('dashboard.me'))
+
+
+@Auth.before_request
 def setup_faecbook_oauth():
     fb_id = current_app.config.get('FACEBOOK_APP_ID')
     facebook = OAuth2Session(
         client_id=fb_id,
-        redirect_uri=url_for('auth.fb_authorized', _external=True))
+        redirect_uri=url_for('auth.fb_authorized', _external=True),
+    )
     facebook = facebook_compliance_fix(facebook)
     g.fb_oauth = facebook
 
@@ -50,7 +63,7 @@ def login():
     authorization_url, state = facebook.authorization_url(
         'https://www.facebook.com/dialog/oauth'
     )
-    session['oauth_state'] = state
+    session['fb_oauth_state'] = state
     return redirect(authorization_url)
 
 
@@ -64,11 +77,20 @@ def fb_authorized():
         client_secret=client_secret,
         authorization_response=request.url,
     )
+    session['fb_oauth_token'] = facebook.token
+    fb_profile = facebook.get('https://graph.facebook.com/me').json()
+    username = fb_profile['name']
+    u_id = uuid.uuid4()
+    user = User(str(u_id), username, None, True)
+    g.db.session.add(user)
+    login_user(user)
     # must store user credentials here
-    flash("Signed in", 'success')
+    flash("Signed in as {}".format(username), 'success')
     return redirect(next_url)
 
 
 @Auth.teardown_request
-def cleanup_facebook_oauth():
+def cleanup_facebook_oauth(exception=None):
+    if exception:
+        logging.error(exception)
     del g.fb_oauth

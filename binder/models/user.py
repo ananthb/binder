@@ -10,15 +10,27 @@ from ..database import db
 
 
 class User(db.Model):
-    Id = db.Column(db.Integer(), primary_key=True)
-    FirstName = db.Column(db.String(20))
-    MiddleName = db.Column(db.String(20))
-    LastName = db.Column(db.String(20))
+    UUID = db.Column(db.String(36), primary_key=True)
+    Name = db.Column(db.String(50))
     Email = db.Column(db.String(200))
-    OpenID = db.Column(db.String(200))
+    IsActive = db.Column(db.Boolean)
 
-    def __init__(f_name, m_name, l_name, email, openid):
-        f_name = self.Firstname
-        m_name = self.MiddleName
-        l_name = self.LastName
-        email = self.Email
+    def __init__(self, u_id, name, email, is_active):
+        self.UUID = u_id
+        self.Name = name
+        self.Email = email
+        self.IsActive = is_active
+
+    @property
+    def is_authenticated(self):
+        return True
+
+    def is_active(self):
+        return self.IsActive
+
+    @property
+    def is_anonymous(self):
+        return True
+
+    def get_id(self):
+        return self.UUID

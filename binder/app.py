@@ -12,13 +12,15 @@
 import os
 import sys
 import enum
+import logging
 
-from flask import Flask, render_template
+from flask import g, Flask, render_template
 from flask_menu import Menu
 from flask.ext.script import Manager
+from flask.ext.login import LoginManager
 from flask_bootstrap import Bootstrap
 
-from . import pages, auth
+from . import pages, auth, dash
 from .database import db
 from .models import User
 from .config import DevelopmentConfig, TestingConfig, ProductionConfig
@@ -29,6 +31,7 @@ __all__ = ['create_app', 'binder_app']
 BLUEPRINTS = [
     pages.Pages,
     auth.Auth,
+    dash.DashBoard
 ]
 
 Mode = enum.Enum('Mode', 'Development Testing Production')
@@ -75,9 +78,19 @@ def create_app(config, mode):
     # init flask_menu
     Menu(app)
 
+    # flask login
+    login_manager = LoginManager()
+    login_manager.init_app(app)
+
+    @login_manager.user_loader
+    def load_user(user_id):
+        return User.query.get(user_id)
+    login_manager.login_view = 'auth.login'
+
     # Apply configuration options
     config_app(mode, config, app)
 
+    # initialize and configure the db for use in request handlers
     config_db(db, app)
 
     # app error handlers
@@ -133,7 +146,23 @@ def config_db(db, app):
     """
 
     db.init_app(app)
-    # create database tables in an app request context
-    with app.test_request_context():
-        db.create_all()
-        db.session.commit()
+    if app.config['DEBUG'] is True:
+        # create database tables in an app request context
+        with app.test_request_context():
+            db.create_all()
+            db.session.commit()
+
+    # inject db into app context for request handlers
+    @app.before_request
+    def inject_db():
+        g.db = db
+
+    # Subsequently clean up the db connection
+    @app.teardown_request
+    def cleanup_db(exception):
+        if exception is not None:
+            logging.error(exception)
+
+        if g.get(db):
+            g.db.session.commit()
+            del g.db

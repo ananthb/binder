@@ -8,7 +8,7 @@
     :license: MIT, See LICENSE for more details
 """
 
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, session, redirect, url_for
 from flask_menu import register_menu
 
 Pages = Blueprint(
@@ -20,6 +20,8 @@ Pages = Blueprint(
 @Pages.route('/')
 @register_menu(Pages, '.home', 'Home', order=0)
 def index():
+    if session.get('fb_oauth_token'):
+        return redirect(url_for('dashboard.me'))
     return render_template('pages/index.html')
 
 
