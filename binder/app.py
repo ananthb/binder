@@ -131,6 +131,4 @@ def config_db(db, app):
     # create database tables in an app request context
     with app.test_request_context():
         db.create_all()
-    # attach db to app context
-    with app.app_context():
-        g.db = db
+        db.session_commit()
