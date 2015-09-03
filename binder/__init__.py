@@ -12,14 +12,5 @@ __version__ = '0.0.4'
 
 from .app import binder_app, create_app
 
-# import blueprints
-from . import pages
-from . import auth
-
-# Global list of blueprints
-BLUEPRINTS = [
-    pages.Pages,
-    auth.Auth,
-]
 
 __all__ = ['binder_app', 'create_app']

@@ -13,18 +13,23 @@ import os
 import sys
 import enum
 
-from flask import g, Flask
-from flask import render_template
+from flask import Flask, render_template
 from flask_menu import Menu
 from flask.ext.script import Manager
 from flask_bootstrap import Bootstrap
 
-import binder
+from . import pages, auth
 from .database import db
 from .models import User
 from .config import DevelopmentConfig, TestingConfig, ProductionConfig
 
 __all__ = ['create_app', 'binder_app']
+
+# Global list of blueprints
+BLUEPRINTS = [
+    pages.Pages,
+    auth.Auth,
+]
 
 Mode = enum.Enum('Mode', 'Development Testing Production')
 
@@ -81,7 +86,7 @@ def create_app(config, mode):
         return render_template('error_404.html'), 404
 
     # Register app blueprints
-    for blueprint in binder.BLUEPRINTS:
+    for blueprint in BLUEPRINTS:
         app.register_blueprint(blueprint)
     return app
 
