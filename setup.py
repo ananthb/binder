@@ -29,12 +29,13 @@ setup(
     author_email='antsub@gmail.com',
     platforms='any',
     install_requires=[
-        'flask>=0.10',
-        'flask-script==2.0.5',
-        'flask-bootstrap>=3.3.5',
-        'flask-sqlalchemy==2',
-        'flask-menu==0.4.0',
+        'Flask==0.10.1',
+        'Flask-Bootstrap==3.3.5.6',
+        'Flask-Menu==0.4.0',
+        'Flask-Script==2.0.5',
+        'Flask-SQLAlchemy==2.0',
         'requests-oauthlib==0.5.0',
+        'SQLAlchemy==1.0.8',
     ],
     entry_points={
         'console_scripts': [

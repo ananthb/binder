@@ -9,6 +9,7 @@
     :license: MIT, see LICENSE for more details
 """
 
+import os
 import sys
 import enum
 
@@ -61,9 +62,6 @@ def create_app(config, mode):
         can be used for it.
     """
 
-    if mode is None:
-        mode = "Development"
-
     app = Flask('binder', instance_relative_config=True)
 
     # Add bootstrap functionality
@@ -94,6 +92,11 @@ def config_app(app_mode, config, app):
         Configures the app to run in the given mode.
         If a configuration file is supplied, that is also applied.
     """
+
+    if app_mode is None:
+        app_mode = "Development"
+        # allow insecure transport for requests-oauthlib
+        os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = "1"
 
     config_map = {
         Mode.Development: DevelopmentConfig,
