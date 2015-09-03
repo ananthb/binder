@@ -12,7 +12,7 @@ from flask import (g, redirect, request, current_app,
 from requests_oauthlib import OAuth2Session
 from requests_oauthlib.compliance_fixes import facebook_compliance_fix
 
-from binder.models import User
+from ..models import User
 
 Auth = Blueprint('auth', __name__, url_prefix='/auth')
 
