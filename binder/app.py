@@ -14,11 +14,12 @@ import sys
 import enum
 import logging
 
-from flask import g, Flask, render_template
+from flask import g, Flask, render_template, current_app
 from flask_menu import Menu
 from flask.ext.script import Manager
 from flask.ext.login import LoginManager
 from flask_bootstrap import Bootstrap
+from sqlalchemy.orm.exc import NoResultFound
 
 from . import pages, auth, dash
 from .database import db
@@ -78,20 +79,14 @@ def create_app(config, mode):
     # init flask_menu
     Menu(app)
 
-    # flask login
-    login_manager = LoginManager()
-    login_manager.init_app(app)
-
-    @login_manager.user_loader
-    def load_user(user_id):
-        return User.query.get(user_id)
-    login_manager.login_view = 'auth.login'
-
     # Apply configuration options
     config_app(mode, config, app)
 
     # initialize and configure the db for use in request handlers
     config_db(db, app)
+
+    # flask login
+    setup_login_manager(app)
 
     # app error handlers
     @app.errorhandler(404)
@@ -166,3 +161,31 @@ def config_db(db, app):
         if g.get(db):
             g.db.session.commit()
             del g.db
+
+
+def setup_login_manager(app):
+    """ setup_login_manager::flask.Flask->None
+
+        Creates a login manager object and attaches an application
+        object to it.
+
+        Also sets up the login view function to redirect to, and
+        the user_loader function.
+
+    """
+
+    login_manager = LoginManager()
+    login_manager.init_app(app)
+    login_manager.login_view = 'auth.login'
+
+    @login_manager.user_loader
+    def load_user(user_id):
+        try:
+            # we need a request context for a valid db connection
+            with current_app.test_request_context('/'):
+                db = g.db
+                user = db.session.query(User).filter(User.UUID == user_id).one()
+            return user
+        except NoResultFound as e:
+            logging.debug(e)
+            return None

@@ -12,7 +12,7 @@ import logging
 
 from flask import (g, redirect, request, current_app,
                    session, flash, url_for, Blueprint)
-from flask.ext.login import login_user
+from flask.ext.login import login_user, logout_user, current_user
 from requests_oauthlib import OAuth2Session
 from requests_oauthlib.compliance_fixes import facebook_compliance_fix
 
@@ -39,9 +39,8 @@ def record_auth(setup_state):
 
 
 @Auth.before_request
-def detect_logged_in_user():
-    token = session.get('fb_oauth_token', None)
-    if token is not None:
+def redirect_logged_in_user():
+    if current_user.is_authenticated and not current_user.is_anonymous:
         flash("Already logged in!")
         return redirect(url_for('dashboard.me'))
 
@@ -69,6 +68,12 @@ def login():
 
 @Auth.route('/fb_authorized/')
 def fb_authorized():
+    # verify that state returned by facebook is the same
+    fb_state = request.args.get('state')
+    if fb_state != session['fb_oauth_state']:
+        flash("Oops! Something went wrong. Try again", 'error')
+        logging.warn("Different state received from facebook. Very fishy!")
+        return redirect(url_for('pages.home'))
     facebook = g.fb_oauth
     next_url = request.args.get('next') or url_for('pages.index')
     client_secret = current_app.config.get('FACEBOOK_APP_SECRET')
@@ -84,9 +89,14 @@ def fb_authorized():
     user = User(str(u_id), username, None, True)
     g.db.session.add(user)
     login_user(user)
-    # must store user credentials here
     flash("Signed in as {}".format(username), 'success')
     return redirect(next_url)
+
+
+@Auth.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('pages.home'))
 
 
 @Auth.teardown_request

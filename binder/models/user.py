@@ -21,14 +21,12 @@ class User(db.Model):
         self.Email = email
         self.IsActive = is_active
 
-    @property
     def is_authenticated(self):
         return True
 
     def is_active(self):
         return self.IsActive
 
-    @property
     def is_anonymous(self):
         return True
 
