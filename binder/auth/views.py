@@ -8,7 +8,6 @@
 
 import sys
 import uuid
-import logging
 
 from flask import (g, redirect, request, current_app,
                    session, flash, url_for, Blueprint)
@@ -33,8 +32,7 @@ def check_facebook_creds(setup_state):
     fb_id = app.config.get('FACEBOOK_APP_ID')
     fb_secret = app.config.get('FACEBOOK_APP_SECRET')
     if fb_id is None or fb_secret is None:
-        print("[binder] error: Facebook app ID or secret not found.",
-              file=sys.stderr)
+        app.logger.error("Facebook app ID or secret not found. Exiting!")
         sys.exit(1)
 
 
@@ -65,7 +63,8 @@ def fb_authorized():
     fb_state = request.args.get('state')
     if fb_state != session['fb_oauth_state']:
         flash("Oops! Something went wrong. Try again", 'error')
-        logging.warn("Different state received from facebook. Very fishy!")
+        current_app.logger.warn(
+            "Different state received from facebook. Very fishy!")
         return redirect(url_for('pages.home'))
 
     facebook = g.fb_oauth
@@ -89,10 +88,3 @@ def fb_authorized():
 def logout():
     logout_user()
     return redirect(url_for('pages.index'))
-
-
-@Auth.teardown_request
-def cleanup_facebook_oauth(exception=None):
-    if exception:
-        logging.error(exception)
-    del g.fb_oauth

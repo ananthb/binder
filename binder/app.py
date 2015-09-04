@@ -12,7 +12,6 @@
 import os
 import sys
 import enum
-import logging
 
 from flask import g, Flask, render_template, current_app
 from flask_menu import Menu
@@ -159,7 +158,7 @@ def config_db(db, app):
     @app.teardown_request
     def cleanup_db(exception):
         if exception is not None:
-            logging.error(exception)
+            current_app.logger.error(exception)
 
         if g.get(db):
             g.db.session.commit()
@@ -189,5 +188,5 @@ def setup_login_manager(app):
                 user = db.session.query(User).filter(User.UUID == user_id).one()
                 return user
         except NoResultFound as e:
-            logging.debug(e)
+            current_app.logger.debug(e)
             return None
