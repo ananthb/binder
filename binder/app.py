@@ -108,8 +108,6 @@ def config_app(app_mode, config, app):
 
     if app_mode is None:
         app_mode = "Development"
-        # allow insecure transport for requests-oauthlib
-        os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = "1"
 
     config_map = {
         Mode.Development: DevelopmentConfig,
@@ -130,6 +128,10 @@ def config_app(app_mode, config, app):
             print("[binder] Error: Config file not readable or not found.",
                   file=sys.stderr)
             sys.exit(1)
+
+    os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = app.config.get(
+        'OAUTHLIB_INSECURE_TRANSPORT'
+    )
 
 
 def config_db(db, app):

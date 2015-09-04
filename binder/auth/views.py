@@ -96,7 +96,7 @@ def fb_authorized():
 @Auth.route('/logout')
 def logout():
     logout_user()
-    return redirect(url_for('pages.home'))
+    return redirect(url_for('pages.index'))
 
 
 @Auth.teardown_request
