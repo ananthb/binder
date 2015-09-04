@@ -44,7 +44,7 @@ setup(
     packages=['binder', 'binder.pages'],
     author='Ananth Bhaskararaman',
     author_email='antsub@gmail.com',
-    url='http://github.com/ananthb/binder'
+    url='http://github.com/ananthb/binder',
     platforms='any',
     install_requires=install_requires,
     entry_points={
