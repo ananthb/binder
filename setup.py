@@ -37,6 +37,7 @@ setup(
         'requests-oauthlib==0.5.0',
         'SQLAlchemy==1.0.8',
         'Flask-Login==0.2.11',
+        'rq==0.5.5',
     ],
     entry_points={
         'console_scripts': [
