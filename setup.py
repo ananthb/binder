@@ -38,6 +38,7 @@ setup(
         'Flask-Login==0.2.11',
         'rq==0.5.5',
         'Flask-Dance==0.7.0',
+        'blinker==1.4',
     ],
     entry_points={
         'console_scripts': [
