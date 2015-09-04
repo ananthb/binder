@@ -152,7 +152,8 @@ def config_db(db, app):
     # inject db into app context for request handlers
     @app.before_request
     def inject_db():
-        g.db = db
+        if getattr(g, 'db', None) is None:
+            g.db = db
 
     # Subsequently clean up the db connection
     @app.teardown_request
@@ -162,7 +163,6 @@ def config_db(db, app):
 
         if g.get(db):
             g.db.session.commit()
-            del g.db
 
 
 def setup_login_manager(app):
@@ -187,7 +187,7 @@ def setup_login_manager(app):
             with current_app.test_request_context('/'):
                 db = g.db
                 user = db.session.query(User).filter(User.UUID == user_id).one()
-            return user
+                return user
         except NoResultFound as e:
             logging.debug(e)
             return None

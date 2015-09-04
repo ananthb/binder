@@ -34,10 +34,10 @@ setup(
         'Flask-Menu==0.4.0',
         'Flask-Script==2.0.5',
         'Flask-SQLAlchemy==2.0',
-        'requests-oauthlib==0.5.0',
         'SQLAlchemy==1.0.8',
         'Flask-Login==0.2.11',
         'rq==0.5.5',
+        'Flask-Dance==0.7.0',
     ],
     entry_points={
         'console_scripts': [

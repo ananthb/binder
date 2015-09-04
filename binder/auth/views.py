@@ -12,7 +12,7 @@ import logging
 
 from flask import (g, redirect, request, current_app,
                    session, flash, url_for, Blueprint)
-from flask.ext.login import login_user, logout_user, current_user
+from flask.ext.login import login_user, logout_user
 from requests_oauthlib import OAuth2Session
 from requests_oauthlib.compliance_fixes import facebook_compliance_fix
 
@@ -36,13 +36,6 @@ def check_facebook_creds(setup_state):
         print("[binder] error: Facebook app ID or secret not found.",
               file=sys.stderr)
         sys.exit(1)
-
-
-@Auth.before_request
-def redirect_logged_in_user():
-    if current_user.is_authenticated and not current_user.is_anonymous:
-        flash("Already logged in!")
-        return redirect(url_for('dashboard.me'))
 
 
 @Auth.before_request
@@ -82,7 +75,6 @@ def fb_authorized():
         client_secret=client_secret,
         authorization_response=request.url,
     )
-    session['fb_oauth_token'] = facebook.token
     fb_profile = facebook.get('https://graph.facebook.com/me').json()
     username = fb_profile['name']
     u_id = uuid.uuid4()

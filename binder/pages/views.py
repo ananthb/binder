@@ -21,7 +21,7 @@ Pages = Blueprint(
 @Pages.route('/')
 @register_menu(Pages, '.home', 'Home', order=0)
 def index():
-    if current_user.is_authenticated and not current_user.is_anonymous:
+    if current_user.is_authenticated:
         return redirect(url_for('dashboard.me'))
     return render_template('pages/index.html')
 

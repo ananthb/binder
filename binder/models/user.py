@@ -10,9 +10,9 @@ from ..database import db
 
 
 class User(db.Model):
-    UUID = db.Column(db.String(36), primary_key=True)
+    UUID = db.Column(db.CHAR(36), primary_key=True)
     Name = db.Column(db.String(50))
-    Email = db.Column(db.String(200))
+    Email = db.Column(db.String(100))
     IsActive = db.Column(db.Boolean)
 
     def __init__(self, u_id, name, email, is_active):
