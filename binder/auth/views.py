@@ -22,8 +22,8 @@ Auth = Blueprint('auth', __name__, url_prefix='/auth')
 
 
 @Auth.record_once
-def record_auth(setup_state):
-    """ record_auth::flask.Flask.state->None
+def check_facebook_creds(setup_state):
+    """ check_facebook_creds::flask.Flask.state->None
 
         Checks for facebook oauth credentials when registering
         the blueprint.
@@ -74,8 +74,8 @@ def fb_authorized():
         flash("Oops! Something went wrong. Try again", 'error')
         logging.warn("Different state received from facebook. Very fishy!")
         return redirect(url_for('pages.home'))
+
     facebook = g.fb_oauth
-    next_url = request.args.get('next') or url_for('pages.index')
     client_secret = current_app.config.get('FACEBOOK_APP_SECRET')
     facebook.fetch_token(
         'https://graph.facebook.com/oauth/access_token',
@@ -90,7 +90,7 @@ def fb_authorized():
     g.db.session.add(user)
     login_user(user)
     flash("Signed in as {}".format(username), 'success')
-    return redirect(next_url)
+    return redirect(url_for('dashboard.me'))
 
 
 @Auth.route('/logout')
