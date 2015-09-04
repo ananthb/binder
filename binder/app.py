@@ -16,11 +16,10 @@ import enum
 from flask import g, Flask, render_template, current_app
 from flask_menu import Menu
 from flask.ext.script import Manager
-from flask.ext.login import LoginManager
 from flask_bootstrap import Bootstrap
-from sqlalchemy.orm.exc import NoResultFound
 
 from . import pages, auth, dash
+from .auth import setup_login_manager
 from .database import db
 from .models import User
 from .config import DevelopmentConfig, TestingConfig, ProductionConfig
@@ -30,8 +29,9 @@ __all__ = ['create_app', 'binder_app']
 # Global list of blueprints
 BLUEPRINTS = [
     pages.Pages,
+    dash.DashBoard,
     auth.Auth,
-    dash.DashBoard
+    auth.FacebookOAuth,
 ]
 
 Mode = enum.Enum('Mode', 'Development Testing Production')
@@ -162,31 +162,3 @@ def config_db(db, app):
 
         if g.get(db):
             g.db.session.commit()
-
-
-def setup_login_manager(app):
-    """ setup_login_manager::flask.Flask->None
-
-        Creates a login manager object and attaches an application
-        object to it.
-
-        Also sets up the login view function to redirect to, and
-        the user_loader function.
-
-    """
-
-    login_manager = LoginManager()
-    login_manager.init_app(app)
-    login_manager.login_view = 'auth.login'
-
-    @login_manager.user_loader
-    def load_user(user_id):
-        try:
-            # we need a request context for a valid db connection
-            with current_app.test_request_context('/'):
-                db = g.db
-                user = db.session.query(User).filter(User.UUID == user_id).one()
-                return user
-        except NoResultFound as e:
-            current_app.logger.debug(e)
-            return None
