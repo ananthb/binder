@@ -140,13 +140,7 @@ def config_db(db, app):
         *This should check if tables exist before creating them.*
         Then attaches the database object to the flask.g object
     """
-
     db.init_app(app)
-    if app.config['DEBUG'] is True:
-        # create database tables in an app request context
-        with app.test_request_context():
-            db.create_all()
-            db.session.commit()
 
     # inject db into app context for request handlers
     @app.before_request
