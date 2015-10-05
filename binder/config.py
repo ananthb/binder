@@ -13,10 +13,12 @@ class Config(object):
     """ Default configuration """
     DEBUG = False
     TESTING = False
+    FLASK_LOG_LEVEL = 'INFO'
 
 
 class DevelopmentConfig(Config):
     DEBUG = True
+    FLASK_LOG_LEVEL = 'DEBUG'
 
 
 class TestingConfig(Config):
@@ -24,4 +26,4 @@ class TestingConfig(Config):
 
 
 class ProductionConfig(Config):
-    pass
+    FLASK_LOG_LEVEL = 'ERROR'

@@ -30,6 +30,7 @@ install_requires = [
     'rq==0.5.5',
     'Flask-Dance==0.7.0',
     'blinker==1.4',
+    'flask-log==0.1.0'
 ]
 
 if '3.2.0' < sys.version < '3.4.0':

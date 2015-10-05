@@ -12,11 +12,14 @@
 import os
 import sys
 import enum
+import logging
 
-from flask import g, Flask, render_template, current_app
+from flask import g, Flask, redirect, render_template, current_app
 from flask_menu import Menu
+from flask.ext.log import Logging
 from flask.ext.script import Manager
 from flask_bootstrap import Bootstrap
+from sqlalchemy.exc import OperationalError
 
 from . import pages, auth, dash
 from .auth import setup_login_manager
@@ -87,10 +90,22 @@ def create_app(config, mode):
     # flask login
     setup_login_manager(app)
 
+    # init logging
+    Logging(app)
+
     # app error handlers
     @app.errorhandler(404)
-    def error_handler(e):
+    def error_handler(exc):
+        logging.error(exc)
         return render_template('error_404.html'), 404
+
+    @app.errorhandler(OperationalError)
+    def create_db_if_not_exists(exc):
+        logging.error(exc)
+        db = g.get('db', None)
+        if db:
+            db.create_all()
+        return redirect('/')
 
     # Register app blueprints
     for blueprint in BLUEPRINTS:

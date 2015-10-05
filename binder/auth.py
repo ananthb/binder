@@ -63,6 +63,8 @@ def logout():
     flash("Logged out.")
     return redirect(url_for('pages.index'))
 
+
+# Facebook OAuth blueprint
 FacebookOAuth = make_facebook_blueprint(
     redirect_to='dashboard.me'
 )
