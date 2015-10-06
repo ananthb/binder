@@ -14,7 +14,8 @@ import sys
 import enum
 import logging
 
-from flask import g, Flask, redirect, render_template, current_app
+from flask import (g, Flask, redirect,
+                   render_template, current_app, send_from_directory)
 from flask_menu import Menu
 from flask.ext.log import Logging
 from flask.ext.script import Manager
@@ -106,6 +107,14 @@ def create_app(config, mode):
         if db:
             db.create_all()
         return redirect('/')
+
+    @app.route('/favicon.ico')
+    def send_favicon():
+        return send_from_directory(
+            os.path.join(app.root_path, 'static'),
+            'img/favicon.ico',
+            mimetype='image/vnd.microsoft.icon'
+        )
 
     # Register app blueprints
     for blueprint in BLUEPRINTS:
