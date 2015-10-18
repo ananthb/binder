@@ -66,6 +66,11 @@ def logout():
 
 # Facebook OAuth blueprint
 FacebookOAuth = make_facebook_blueprint(
+    scope=[
+        'email',
+        'user_friends',
+        'user_education_history',
+    ],
     redirect_to='dashboard.me'
 )
 
